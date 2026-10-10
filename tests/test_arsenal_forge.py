@@ -19,12 +19,18 @@ class ArsenalForgeTests(unittest.TestCase):
         self.assertNotIn("node_modules/pkg/index.js", ranked)
 
     def test_security_gate_blocks_dynamic_exec(self):
-        gate = SecurityScanner().gate({"tool.py": "value = eval(user_input)"})
+        gate = SecurityScanner().gate({"tool.py": "value = eval(user_input)"})  # nosec AF003
         self.assertFalse(gate.passed)
         self.assertTrue(any(item.rule_id == "AF003" for item in gate.findings))
 
     def test_security_gate_allows_clean_text(self):
         gate = SecurityScanner().gate({"tool.py": "print('hello')"})
+        self.assertTrue(gate.passed)
+        self.assertEqual(gate.score, 100)
+
+    def test_rule_scoped_nosec_suppression(self):
+        source = "value = eval(user_input)  # nosec AF003"
+        gate = SecurityScanner().gate({"tool.py": source})
         self.assertTrue(gate.passed)
         self.assertEqual(gate.score, 100)
 
