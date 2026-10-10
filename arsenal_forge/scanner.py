@@ -33,12 +33,22 @@ CORE_DIRS = {
     "services", "service", "api", "server", "client", "agents", "agent",
 }
 
+EXCLUDED_DIRS = {
+    "node_modules", "dist", "build", "vendor", ".venv", "venv",
+    "__pycache__", ".pytest_cache", ".mypy_cache", ".tox",
+}
+
 
 def score_path(path: str) -> int:
     p = PurePosixPath(path)
     name = p.name
     lower_name = name.lower()
     parts = {part.lower() for part in p.parts}
+
+    # Generated/vendor trees are never repository-intelligence candidates.
+    if parts & EXCLUDED_DIRS:
+        return -1000
+
     score = 0
 
     if name in ENTRY_NAMES:
@@ -59,8 +69,6 @@ def score_path(path: str) -> int:
 
     if any(part.startswith(".") for part in p.parts):
         score -= 30
-    if any(part in {"node_modules", "dist", "build", "vendor", ".venv", "venv"} for part in p.parts):
-        score -= 100
 
     return score
 
