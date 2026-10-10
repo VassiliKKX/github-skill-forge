@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arsenal-forge"
+version = "0.1.0"
+description = "Repository intelligence, security gating and evaluation for verified Agent skills"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+arsenal-forge = "arsenal_forge.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["arsenal_forge*"]
